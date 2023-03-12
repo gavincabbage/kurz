@@ -11,8 +11,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gavincabbage/kurz/cmd/kurzd/api"
-	"github.com/gavincabbage/kurz/cmd/kurzd/store/inmem"
+	"github.com/gavincabbage/kurz/api"
+	"github.com/gavincabbage/kurz/store/inmem"
 )
 
 func main() {
@@ -44,10 +44,7 @@ func main() {
 		addr = fmt.Sprintf(":%d", i)
 	}
 
-	// TODO(gavincabbage): Next, implement the other store types
-	//		also: - docker-compose to run w/ other store types
-	//			  - unit tests
-	//			  - expiration
+	// TODO(gavincabbage): Enable other types of store.
 	store := inmem.Store{}
 	server := api.New(logger, addr, &store)
 

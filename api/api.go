@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -8,6 +9,8 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/gavincabbage/kurz/store"
 )
 
 type Server struct {
@@ -28,7 +31,7 @@ func New(logger *log.Logger, address string, store LinkStore) *http.Server {
 
 	return &http.Server{
 		Addr:         address,
-		Handler:      logging(logger)(router),
+		Handler:      logging(logger)(router), // TODO(gavincabbage): Make logger optional.
 		ErrorLog:     logger,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
@@ -51,30 +54,44 @@ func (s *Server) postLink(w http.ResponseWriter, r *http.Request) {
 	link, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("reading request body: %v", err), http.StatusInternalServerError)
+		return
 	}
 	if _, err := url.Parse(string(link)); err != nil {
 		http.Error(w, fmt.Sprintf("invalid link %q: %v", link, err), http.StatusBadRequest)
+		return
 	}
 
 	key := strings.TrimPrefix(r.URL.Path, "/")
 	if len(key) == 0 {
 		http.Error(w, "missing link key", http.StatusBadRequest)
+		return
 	}
 
 	if err := s.store.Put(key, string(link)); err != nil {
 		http.Error(w, fmt.Sprintf("storing link: %v", err), http.StatusInternalServerError)
+		return
 	}
+
+	w.WriteHeader(http.StatusCreated)
 }
 
 func (s *Server) getLink(w http.ResponseWriter, r *http.Request) {
 	key := strings.TrimPrefix(r.URL.Path, "/")
 	if len(key) == 0 {
 		http.Error(w, "missing link key", http.StatusBadRequest)
+		return
 	}
 
 	v, err := s.store.Get(key)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("storing link: %v", err), http.StatusInternalServerError)
+		notFound := store.NotFound(key)
+		if errors.As(err, &notFound) {
+			http.Error(w, fmt.Sprintf("not found: %s", notFound), http.StatusNotFound)
+		} else {
+			http.Error(w, fmt.Sprintf("getting link: %v", err), http.StatusInternalServerError)
+		}
+		return
+
 	}
 
 	http.Redirect(w, r, v, http.StatusPermanentRedirect)

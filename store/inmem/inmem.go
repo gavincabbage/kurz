@@ -3,7 +3,7 @@ package inmem
 import (
 	"sync"
 
-	"github.com/gavincabbage/kurz/cmd/kurzd/store"
+	"github.com/gavincabbage/kurz/store"
 )
 
 type Store struct {

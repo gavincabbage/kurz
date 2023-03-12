@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+
+  test:
+    build: .
+    command: go test -v -p 1 -timeout=60s ./integration_test.go
+#    environment:
+#      - REDIS_URL=redis://redis
+#    depends_on:
+#      - redis
+
+#  redis:
+#    image: redis/redis:latest
