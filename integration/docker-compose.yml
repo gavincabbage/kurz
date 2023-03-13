@@ -3,8 +3,9 @@ version: '3'
 services:
 
   test:
-    build: .
-    command: go test -v -p 1 -timeout=60s ./integration_test.go
+#    build: ./test/
+    image: kurz:dev
+    command: go test -v -p 1 -timeout=60s ./test/integration_test.go
 #    environment:
 #      - REDIS_URL=redis://redis
 #    depends_on:

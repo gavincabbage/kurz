@@ -1,8 +1,8 @@
-package test_test
+package integration_test
 
 import "testing"
 
-func TestKurz(t *testing.T) {
+func TestKurzd(t *testing.T) {
 	for _, test := range []struct {
 		name string
 	}{
