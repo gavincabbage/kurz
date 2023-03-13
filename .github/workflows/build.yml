@@ -18,6 +18,8 @@ jobs:
           fetch-depth: 1
       - name: Run linter
         uses: golangci/golangci-lint-action@v3
+        with:
+          skip-cache: true
 
 #  unit:
 #    name: Unit Tests
