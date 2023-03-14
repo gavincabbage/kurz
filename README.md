@@ -20,9 +20,3 @@
         <img src="http://img.shields.io/badge/License-MIT-blue.svg" alt="license" />
     </a>
 </div>
-
-<br/>
-
-## Usage
-
-Respects a `PORT` environment variable to override the default of `8080`.
