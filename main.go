@@ -2,18 +2,30 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"flag"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
-	"strconv"
 	"syscall"
 	"time"
 
+	"github.com/redis/go-redis/v9"
+
 	"github.com/gavincabbage/kurz/api"
 	"github.com/gavincabbage/kurz/store/inmem"
+	kurzredis "github.com/gavincabbage/kurz/store/redis"
 )
+
+var argv struct {
+	listenAddr string
+	redisAddr  string
+}
+
+func init() {
+	flag.StringVar(&argv.listenAddr, "listen-addr", ":8080", "host:port on which to serve the http api")
+	flag.StringVar(&argv.redisAddr, "redis-addr", ":8080", "address of redis to use as link store")
+}
 
 func main() {
 	logger := log.New(os.Stdout, "kurzd: ", log.LstdFlags)
@@ -34,20 +46,17 @@ func main() {
 		cancel()
 	}()
 
-	addr := ":8080"
-	if a := os.Getenv("PORT"); a != "" {
-		i, err := strconv.Atoi(a)
-		if err != nil {
-			logger.Printf("invalid port %s\n", a)
-		}
-
-		addr = fmt.Sprintf(":%d", i)
+	var store api.LinkStore
+	if argv.redisAddr != "" {
+		cli := redis.NewClient(&redis.Options{
+			Addr: argv.redisAddr,
+		})
+		store = kurzredis.New(cli)
+	} else {
+		store = &inmem.Store{}
 	}
 
-	// TODO(gavincabbage): Enable other types of store.
-	store := inmem.Store{}
-	server := api.New(logger, addr, &store)
-
+	server := api.New(logger, argv.listenAddr, store)
 	serverError := make(chan error)
 	go func() {
 		if err := server.ListenAndServe(); err != http.ErrServerClosed {

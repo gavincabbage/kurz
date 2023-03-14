@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -18,8 +19,8 @@ type Server struct {
 }
 
 type LinkStore interface {
-	Put(string, string) error
-	Get(string) (string, error)
+	Put(context.Context, string, string) error
+	Get(context.Context, string) (string, error)
 }
 
 func New(logger *log.Logger, address string, store LinkStore) *http.Server {
@@ -67,7 +68,7 @@ func (s *Server) postLink(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := s.store.Put(key, string(link)); err != nil {
+	if err := s.store.Put(r.Context(), key, string(link)); err != nil {
 		http.Error(w, fmt.Sprintf("storing link: %v", err), http.StatusInternalServerError)
 		return
 	}
@@ -82,7 +83,7 @@ func (s *Server) getLink(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	v, err := s.store.Get(key)
+	v, err := s.store.Get(r.Context(), key)
 	if err != nil {
 		notFound := store.NotFound(key)
 		if errors.As(err, &notFound) {
