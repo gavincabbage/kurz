@@ -2,8 +2,6 @@
     kurz
 </h1>
 
----
-
 <p align="center">
     A link shortener written in Go.
 </p>
@@ -23,6 +21,8 @@
     </a>
 </div>
 
----
+<br/>
+
+## Usage
 
 Respects a `PORT` environment variable to override the default of `8080`.
