@@ -44,7 +44,7 @@ jobs:
     services:
       kurz:
         using: docker
-        build: Dockerfile
+        image: Dockerfile
     steps:
       - uses: actions/checkout@v3
       - name: Install Postman CLI
