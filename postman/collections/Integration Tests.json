@@ -1,0 +1,128 @@
+{
+	"info": {
+		"_postman_id": "9db7ee2f-dbbb-4f00-bc4f-7b7fac25fca8",
+		"name": "Integration Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "2244082-9db7ee2f-dbbb-4f00-bc4f-7b7fac25fca8"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fd06714d-4aac-42b6-aa61-996b0fd74f45",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "582efa98-0357-4a3a-802c-3d46b542eb9e",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}:{{port}}/health",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Link",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2a847f30-fcf1-4a6b-b10e-bc5316f8bd3d",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "4313c9e2-91df-4bef-a855-8c97437da6eb",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "https://test.test",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}:{{port}}/foo",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"foo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Follow Link",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "57c0d6ff-dbfc-4fb9-9fdc-e3dbb0893ded",
+						"exec": [
+							"pm.test(\"Status code is 308\", function () {",
+							"    pm.response.to.have.status(308);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "7d5f09df-797b-4445-a137-ee55b1b6e141",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true,
+				"followRedirects": false
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}:{{port}}/foo",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"foo"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
