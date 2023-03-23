@@ -43,7 +43,8 @@ jobs:
     runs-on: ubuntu-latest
     services:
       kurz:
-        build: .
+        using: docker
+        build: Dockerfile
     steps:
       - uses: actions/checkout@v3
       - name: Install Postman CLI
