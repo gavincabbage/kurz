@@ -24,7 +24,7 @@ var argv struct {
 
 func init() {
 	flag.StringVar(&argv.listenAddr, "listen-addr", ":8080", "host:port on which to serve the http api")
-	flag.StringVar(&argv.redisAddr, "redis-addr", ":8080", "address of redis to use as link store")
+	flag.StringVar(&argv.redisAddr, "redis-addr", "", "address of redis to use as link store")
 }
 
 func main() {

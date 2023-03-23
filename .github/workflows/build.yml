@@ -37,3 +37,20 @@ jobs:
         run: go mod download
       - name: Run unit tests
         run: go test -v -p 1 -tags=unit -timeout=30s ./...
+
+  integration:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    services:
+      kurz:
+        image: .
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Postman CLI
+        run: |
+          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+      - name: Login to Postman CLI
+        run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
+      - name: Run API tests
+        run: |
+          postman collection run "${{ github.workspace }}/postman/collections/Integration Tests.json" -e "2244082-6153fedf-168e-43c7-9043-0de187160981"

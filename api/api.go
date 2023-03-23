@@ -105,12 +105,27 @@ func health(w http.ResponseWriter, _ *http.Request) {
 func logging(logger *log.Logger) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			rw := newStatusResponseWriter(w)
 			defer func() {
-				logger.Println(r.Method, r.URL.Path, r.RemoteAddr, r.UserAgent(),
+				logger.Println(r.Method, r.URL.Path, r.RemoteAddr, rw.status, r.UserAgent(),
 					"Content-Type:", r.Header.Get("content-type"),
 					"Accept:", r.Header.Get("accept"))
 			}()
-			next.ServeHTTP(w, r)
+			next.ServeHTTP(rw, r)
 		})
 	}
+}
+
+type statusResponseWriter struct {
+	http.ResponseWriter
+	status int
+}
+
+func newStatusResponseWriter(w http.ResponseWriter) *statusResponseWriter {
+	return &statusResponseWriter{w, http.StatusOK}
+}
+
+func (w *statusResponseWriter) WriteHeader(statusCode int) {
+	w.status = statusCode
+	w.ResponseWriter.WriteHeader(statusCode)
 }
